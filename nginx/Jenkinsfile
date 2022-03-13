@@ -6,16 +6,16 @@ pipeline {
         stage('build') {
             agent {
                 docker {
-                    image 'node:16'
+                    image 'nginx'
                 }
             }
             when {
-                changeset "**/client/**"
+                changeset "**/nginx/**"
             }
             steps {
-                echo 'Compiling the Result app'
-                dir('client') {
-                     sh 'npm install'
+                echo 'Compiling the nginx app'
+                dir('nginx') {
+                     sh 'COPY ./default.conf /etc/nginx/conf.d/default.conf'
                 }
             }
         }
@@ -23,13 +23,13 @@ pipeline {
             agent any
             when {
                 //branch 'main'
-                changeset "**/client/**"
+                changeset "**/nginx/**"
             }
             steps {
-                echo 'Packaging the result app with docker.'
+                echo 'Packaging the nginx app with docker.'
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
-                        def workerImage = docker.build("rknmit/emailai-ui:v${env.BUILD_ID}", "./client")
+                        def workerImage = docker.build("rknmit/emailai-nginx:v${env.BUILD_ID}", "./nginx")
                         workerImage.push()
                         workerImage.push("${env.BRANCH_NAME}")
                     }
