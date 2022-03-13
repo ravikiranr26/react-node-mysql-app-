@@ -1,1 +1,1 @@
-## Frontend based on React, bootsrap
+## Frontend based on React, bootsrap, node
