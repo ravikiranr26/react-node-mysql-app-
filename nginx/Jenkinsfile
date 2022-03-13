@@ -1,0 +1,52 @@
+pipeline {
+    
+    agent none
+
+    stages {
+        stage('build') {
+            agent {
+                docker {
+                    image 'nginx'
+                }
+            }
+            when {
+                changeset "**/nginx/**"
+            }
+            steps {
+                echo 'Compiling the nginx app'
+                dir('nginx') {
+                     sh 'COPY ./default.conf /etc/nginx/conf.d/default.conf'
+                }
+            }
+        }
+        stage('docker-package') {
+            agent any
+            when {
+                //branch 'main'
+                changeset "**/nginx/**"
+            }
+            steps {
+                echo 'Packaging the nginx app with docker.'
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub') {
+                        def workerImage = docker.build("rknmit/emailai-nginx:v${env.BUILD_ID}", "./nginx")
+                        workerImage.push()
+                        workerImage.push("${env.BRANCH_NAME}")
+                    }
+                }
+            }
+        }
+    }
+    
+    post  {
+        always {
+            echo 'pipeline for result run is completed'
+        }
+        /* failure {
+            slackSend (channel: "subjects-cd", message: "Build Failed: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")    
+         }
+        success {
+            slackSend (channel: "subjects-cd", message: "Build Success: ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)")
+        } */
+    }
+}
