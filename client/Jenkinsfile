@@ -22,7 +22,7 @@ pipeline {
         stage('docker-package') {
             agent any
             when {
-                branch 'main'
+                //branch 'main'
                 changeset "**/client/**"
             }
             steps {
