@@ -25,6 +25,7 @@ services:
       - api
       - client
     restart: always
+    image: rknmit/emailai-nginx:main
     build:
       dockerfile: Dockerfile
       context: ./nginx
@@ -32,6 +33,7 @@ services:
       - "3050:80"
 
   api:
+    image: rknmit/emailai-backend:main
     build:
       dockerfile: Dockerfile
       context: "./server"
@@ -48,6 +50,7 @@ services:
     stdin_open: true
     environment:
       - CHOKIDAR_USEPOLLING=true
+    image: rknmit/emailai-ui:main
     build:
       dockerfile: Dockerfile
       context: ./client

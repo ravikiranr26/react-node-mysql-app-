@@ -1,7 +1,11 @@
-FROM node:16
+FROM node:16.0-alpine
+
 WORKDIR /usr/src/app
-COPY package.json ./
-COPY package-lock.json ./
+
+COPY package*.json ./
+
 COPY ./ ./
-RUN npm i
+
+RUN npm install --only prod
+
 CMD ["npm", "run", "start"]
