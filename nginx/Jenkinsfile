@@ -14,9 +14,9 @@ pipeline {
             }
             steps {
                 echo 'Compiling the nginx app'
-                dir('nginx') {
+                /* dir('nginx') {
                      sh 'cp ./default.conf /etc/nginx/conf.d/default.conf'
-                }
+                } */
             }
         }
         stage('docker-package') {
